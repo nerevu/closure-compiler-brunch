@@ -2,6 +2,8 @@
 {expect} = require 'chai'
 Plugin = require '../'
 
+data = {}
+
 describe 'Plugin', ->
   plugin = null
 
@@ -14,31 +16,25 @@ describe 'Plugin', ->
     expect(plugin).to.respondTo 'optimize'
 
   it 'should compile correctly', ->
-    content = 'const x = 1 + 2;'
-    expected = 'var x=3;'
-    plugin.optimize(data: content)
+    path = 'test/fixtures/one.js'
+    expected = 'var x=3;\n'
+    plugin.optimize({data, path})
       .then (result) ->
         expect(result.data).to.equal(expected)
 
   it 'should produce source maps', ->
-    content = """
-    (function() {
-      var foo = 10;
-      window.bar = foo * 10;
-    })()
-    """
+    path = 'test/fixtures/two.js'
+
     expected =
-      data: '(function(){window.bar=100})();'
+      data: '(function(){window.bar=100})();\n'
       map: """{\n"version":3,\n"file":"",\n"lineCount":1,
-          "mappings":"AAAC,SAAQ,EAAG,CAEVA,MAAAC,IAAA,CAAa,GAFH,CAAX,CAAD;",
-          "sources":["file.js"],\n"names":["window","bar"]\n}\n
+          "mappings":"AAAC,SAAQ,EAAG,CAEVA,MAAOC,CAAAA,GAAP,CAAa,GAFH,CAAX,CAAD;",
+          "sources":["test/fixtures/two.js"],\n"names":["window","bar"]\n}\n
           """
-    file =
-      data: content
-      path: 'file.js'
-    plugin.optimize(file)
-      .then (data) ->
-        expect(data).to.eql(expected)
+
+    plugin.optimize({data, path})
+      .then (result) ->
+        expect(result).to.eql(expected)
 
 
 describe 'Plugin#Customized', ->
@@ -49,7 +45,8 @@ describe 'Plugin#Customized', ->
 
   it 'should not produce source map if configured', ->
     plugin = new Plugin plugins: closurecompiler: createSourceMap: no
-    file = data: 'const x = 1 + 2;'
-    plugin.optimize(file)
-      .then (data) ->
-        expect(data.map).to.not.be.ok
+    path = 'test/fixtures/one.js'
+
+    plugin.optimize({data, path})
+      .then (result) ->
+        expect(result.map).to.not.be.ok

@@ -2,9 +2,12 @@
   "name": "closure-compiler-brunch",
   "version": "0.2.0",
   "description": "JavaScript optimizer with Closure Compiler in JS for Brunch files.",
-  "main": "index.coffee",
+  "main": "./lib/index",
   "scripts": {
-    "test": "mocha && istanbul report text-summary lcov"
+    "test": "npm run mocha && npm run cover",
+    "mocha": "mocha --require coffeescript/register test/**/*.coffee",
+    "cover": "istanbul report text-summary lcov",
+    "prepublishOnly": "coffee -o lib/ src/"
   },
   "repository": {
     "type": "git",
@@ -31,13 +34,16 @@
   "homepage": "https://github.com/prashnts/closure-compiler-brunch#readme",
   "devDependencies": {
     "chai": "^4.1.0",
-    "codeclimate-test-reporter": "^0.4.0",
+    "codeclimate-test-reporter": "^0.5.1",
     "coffee-coverage": "^2.0.0",
-    "coffee-script": "^1.10.0",
+    "coffeescript": "^2.5.1",
     "istanbul": "^0.4.5",
-    "mocha": "^4.0.0"
+    "mocha": "^8.3.2"
   },
   "dependencies": {
-    "google-closure-compiler-js": "^20170806.0.0"
+    "google-closure-compiler": "^20210302.0.0"
+  },
+  "directories": {
+    "test": "test"
   }
 }
